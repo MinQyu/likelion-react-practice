@@ -2,6 +2,7 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
+import { reactClickToComponent } from 'vite-plugin-react-click-to-component';
 
 const viteConfig = defineConfig((env) => {
   const isDevMode = env.mode.includes('development');
@@ -12,6 +13,7 @@ const viteConfig = defineConfig((env) => {
         jsxRuntime: 'automatic',
       }),
       tailwindcss(),
+      reactClickToComponent(),
     ],
     server: {
       host: 'localhost',
