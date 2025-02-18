@@ -1,9 +1,13 @@
 import MemoryComponentDataPage from '@/pages/memory-component-data';
+import AnimationWithMotionPage from '@/pages/animation-with-motion';
 import StateManagement from '@/pages/state-management';
 import ErrorBoundaryDemo from '@/pages/error-boundary';
+import DataFetchingPage from '@/pages/data-fetching';
 import SideEffectDemo from '@/pages/side-effect';
 import SearchListPage from '@/pages/search-list';
+import AccessDOMPage from '@/pages/access-dom';
 import LifecycleDemo from '@/pages/lifecycle';
+import MemoListPage from '@/pages/memo-list';
 import TicTacToe from '@/pages/tic-tac-toe';
 import SignInForm from '@/pages/sign-in';
 import SignUpForm from '@/pages/sign-up';
@@ -13,6 +17,26 @@ import NotFound from '@/pages/not-found';
 // 내비게이션 리스트 데이터
 
 export const navList = [
+  {
+    path: 'supabase-memo-list',
+    text: '메모 리스트 (with Supabase)',
+    element: <MemoListPage />,
+  },
+  {
+    path: 'data-fetching',
+    text: '데이터 쿼리/뮤테이션',
+    element: <DataFetchingPage />,
+  },
+  {
+    path: 'animation',
+    text: '모션 애니메이션',
+    element: <AnimationWithMotionPage />,
+  },
+  {
+    path: 'accessing-dom',
+    text: 'DOM 접근/조작',
+    element: <AccessDOMPage />,
+  },
   {
     path: 'memory-component-data',
     text: '데이터 메모리',

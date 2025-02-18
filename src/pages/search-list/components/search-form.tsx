@@ -1,4 +1,4 @@
-import { useId, useState } from 'react';
+import { Ref, useId, useImperativeHandle, useRef, useState } from 'react';
 import { tm } from '@/utils/tw-merge';
 import { deleteQueryParam, setQueryParam } from '../utils/query-param';
 
@@ -6,19 +6,28 @@ import { deleteQueryParam, setQueryParam } from '../utils/query-param';
 const getQueryString = () => decodeURIComponent(location.search);
 
 // string으로 구성된 배열을 문자 값으로 변환하는 함수
-const convertQueryString = (queryArray: string[]) => queryArray.filter(Boolean).join(' ').trim();
+const convertQueryString = (queryArray: string[]) =>
+  queryArray.filter(Boolean).join(' ').trim();
 
 interface SearchFormProps {
   query: string;
+  ref?: Ref<{ focus: () => void; select: () => void; remove: () => void }>;
   setQuery: React.Dispatch<React.SetStateAction<string>>;
 }
 
-function SearchForm({ query, setQuery }: SearchFormProps) {
+// --------------------------------------------------------------------------
+
+function SearchForm({ query, ref, setQuery }: SearchFormProps) {
+  console.log('render: search form');
+
   const [queryString, setQueryString] = useState(getQueryString);
   const searchInputId = useId();
 
   // [파생된 상태]
-  const words = query.split(' ').filter(Boolean).map((word) => word.toLowerCase().trim());
+  const words = query
+    .split(' ')
+    .filter(Boolean)
+    .map((word) => word.toLowerCase().trim());
   const isEnabledSearch = words.length > 0;
 
   const checkPeace = words.includes('평화');
@@ -27,7 +36,9 @@ function SearchForm({ query, setQuery }: SearchFormProps) {
 
   // [이벤트 핸들러]
   const handleCheck = (tag: string, nextIsChecked: boolean) => {
-    const newWords = nextIsChecked ? [...words, tag] : words.filter(word => word !== tag);
+    const newWords = nextIsChecked
+      ? [...words, tag]
+      : words.filter((word) => word !== tag);
     const nextQuery = convertQueryString(newWords);
     setQuery(nextQuery);
   };
@@ -45,6 +56,45 @@ function SearchForm({ query, setQuery }: SearchFormProps) {
     }
   };
 
+  // [명령형 기능(핸들러) 공유 방식 채택]
+  // useImperativeHandle() 훅 함수
+  useImperativeHandle(ref, () => {
+    console.log('use imperative handle: share handles');
+    const inputElement = inputRef.current;
+
+    // 기능 1. inputRef 참조를 통해 <input> 요소에 초점 이동하기
+    const focus /* handleFocus */ = () => {
+      if (inputElement) {
+        inputElement.focus();
+      }
+    };
+
+    // 기능 2. <input> 요소 입력 내용 모두 선택하기
+    const select /* handleSelect */ = () => {
+      if (inputElement) {
+        inputElement.select();
+      }
+    };
+
+    // 기능 3. <input> 요소를 삭제하기
+    const remove /* handleRemove */ = () => {
+      if (inputElement) {
+        inputElement.remove();
+      }
+    };
+
+    // 명령형 핸들러 하나 이상 공유 반환
+    // 하나면 함수
+    // 둘 이상이면 객체
+    return {
+      focus,
+      select,
+      remove,
+    };
+  }, []);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
   return (
     <>
       <output className="bg-react text-white px-4 py-2 rounded-full text-xs font-mono">
@@ -57,6 +107,7 @@ function SearchForm({ query, setQuery }: SearchFormProps) {
         </label>
         <div className={tm('flex gap-1')}>
           <input
+            ref={inputRef}
             type="search"
             name="query"
             id={searchInputId}
